@@ -1,0 +1,136 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+class Patient {
+    private String name;
+    private int age;
+    private String sex;
+    private String address;
+    private String illness;
+    private double hospitalCharges;
+    private Date admissionDate;
+
+    public Patient(String name, int age, String sex, String address, String illness, double hospitalCharges) {
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+        this.address = address;
+        this.illness = illness;
+        this.hospitalCharges = hospitalCharges;
+        this.admissionDate = new Date();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getIllness() {
+        return illness;
+    }
+
+    public double getHospitalCharges() {
+        return hospitalCharges;
+    }
+
+    public Date getAdmissionDate() {
+        return admissionDate;
+    }
+
+    public void updatePatientDetails(String newAddress, double newHospitalCharges) {
+        this.address = newAddress;
+        this.hospitalCharges = newHospitalCharges;
+    }
+
+    public boolean isInactive() {
+        Date currentDate = new Date();
+        long admissionDuration = currentDate.getTime() - admissionDate.getTime();
+        long daysAdmitted = admissionDuration / (24 * 60 * 60 * 1000);
+        return daysAdmitted > 15;
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return "Name: " + name +
+               "\nAge: " + age +
+               "\nSex: " + sex +
+               "\nAddress: " + address +
+               "\nIllness: " + illness +
+               "\nHospital Charges: $" + hospitalCharges +
+               "\nAdmission Date: " + dateFormat.format(admissionDate);
+    }
+}
+
+public class HospitalManagementSystem {
+    private ArrayList<Patient> patients = new ArrayList<>();
+
+    public void registerPatient(String name, int age, String sex, String address, String illness, double hospitalCharges) {
+        Patient newPatient = new Patient(name, age, sex, address, illness, hospitalCharges);
+        patients.add(newPatient);
+        System.out.println("Patient registered successfully.");
+    }
+
+    public void updatePatientDetails(String name, String newAddress, double newHospitalCharges) {
+        for (Patient patient : patients) {
+            if (patient.getName().equalsIgnoreCase(name)) {
+                patient.updatePatientDetails(newAddress, newHospitalCharges);
+                System.out.println("Patient details updated successfully.");
+                return;
+            }
+        }
+        System.out.println("Patient not found.");
+    }
+
+    public void displayPatientDetails(String name) {
+        for (Patient patient : patients) {
+            if (patient.getName().equalsIgnoreCase(name)) {
+                System.out.println(patient);
+                return;
+            }
+        }
+        System.out.println("Patient not found.");
+    }
+
+    public void removeInactivePatients() {
+        ArrayList<Patient> activePatients = new ArrayList<>();
+        for (Patient patient : patients) {
+            if (!patient.isInactive()) {
+                activePatients.add(patient);
+            }
+        }
+        patients = activePatients;
+        System.out.println("Inactive patients removed.");
+    }
+
+    public static void main(String[] args) {
+        HospitalManagementSystem hospitalSystem = new HospitalManagementSystem();
+
+        hospitalSystem.registerPatient("John Doe", 35, "Male", "123 Main St", "Fever", 1200.0);
+        hospitalSystem.registerPatient("Jane Smith", 45, "Female", "456 Elm St", "Broken Leg", 2500.0);
+
+        hospitalSystem.displayPatientDetails("John Doe");
+        System.out.println();
+
+        hospitalSystem.updatePatientDetails("Jane Smith", "789 Oak St", 2800.0);
+        hospitalSystem.displayPatientDetails("Jane Smith");
+        System.out.println();
+
+        hospitalSystem.removeInactivePatients();
+
+        hospitalSystem.displayPatientDetails("John Doe");
+        hospitalSystem.displayPatientDetails("Jane Smith");
+    }
+}
